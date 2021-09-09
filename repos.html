@@ -97,12 +97,13 @@
                 myObject.$data.data = myObject.$data.data.concat(data);
             }
             $("#Wrong_Username").css("display", "none");
+            $("#loader").css("display", "none")
         }).fail(function() {
             console.log("Problem")
             $('#Wrong_Username').css("display", "")
             $("#loader").css("display", "none")
         });
-        $("#loader").css("display", "none");
+        
     }
     const myObject = new Vue({
         el: '#information',
@@ -121,6 +122,14 @@
         const username = $("#username").val();
         get_repos(username)
     })
+
+    $('#username').keypress(function(event){
+	    const keycode = (event.keyCode ? event.keyCode : event.which);
+	    if(keycode == '13'){
+		    $("#submit").click();
+	    }
+    });
+
 </script>
 
 </body>
