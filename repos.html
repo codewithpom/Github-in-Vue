@@ -10,6 +10,11 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<style>
+    body {
+        word-break: break-all;
+    }
+</style>
 <body>
 
 <div id="app" class="container">
@@ -44,12 +49,15 @@
     <div id="information">
         <ul class="list-group mx-auto mb-5">
             <li class="list-group-item" v-for="x in data">
-                <p><strong>Repo:</strong>{{x['Repos']}}</p>
-                <p><strong>Description:</strong>{{x['description']}}</p>
-                <p><strong>URL:</strong> <a href="{{x['html_url']}}">{{x['html_url']}}</a></p>
+                <p><strong>Repo:</strong> {{x['name']}}</p>
+                <p><strong>Description:</strong> {{x['description']}}</p>
+                <p><strong>URL:</strong> <a :href="x['html_url']" target="_blank">{{x['html_url']}}</a></p>
             </li>
         </ul>
-
+        <h3 style="text-align: center;display: none" id="no_more">
+            No more repos
+        </h3>
+        <br>
     </div>
 
 
@@ -57,11 +65,38 @@
 
 <script>
     window.page = 0;
+    window.username = undefined;
+    window.max = false;
     function get_repos(username) {
-        $.get(`https://api.github.com/users/${username}/repos?page=${window.page + 1}`, function(data){
+        if (window.username === username){
             window.page += 1;
-            console.log(data)
-            $("#Wrong_Username").css("display", "none")
+            if (window.max){
+
+                return ;
+            }
+
+        }else {
+            window.page = 0;
+            window.username = username;
+            window.max = false;
+        }
+
+        $.get(`https://api.github.com/users/${username}/repos?page=${window.page + 1}`, function(data){
+            console.log(data);
+
+            if (data.length === 0){
+                $("#no_more").css("display", "");
+                window.max = true;
+            }else {
+                $("#no_more").css("display", "none");
+            }
+
+            if (window.page === 0){
+                myObject.$data.data = data;
+            }else {
+                myObject.$data.data = myObject.$data.data.concat(data);
+            }
+            $("#Wrong_Username").css("display", "none");
         }).fail(function() {
             console.log("Problem")
             $('#Wrong_Username').css("display", "")
@@ -73,6 +108,17 @@
         data: {
             data: [],
         }
+    })
+
+    $(window).scroll(function() {
+        if(Math.ceil($(window).scrollTop()) === Math.ceil(($(document).height() - $(window).height()))) {
+            get_repos(window.username)
+        }
+    });
+
+    $('#submit').on("click", function (){
+        const username = $("#username").val();
+        get_repos(username)
     })
 </script>
 
