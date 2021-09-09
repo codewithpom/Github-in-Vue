@@ -130,6 +130,15 @@
 	    }
     });
 
+    document.getElementsByTagName("html")[0].addEventListener("keydown", function(event){
+        const keycode = (event.keyCode ? event.keyCode : event.which);
+        console.log(keycode)
+        if (keycode === 191){
+            event.preventDefault();
+            document.getElementById("username").focus();
+            document.getElementById("username").value = "";
+        }
+    })
 </script>
 
 </body>
