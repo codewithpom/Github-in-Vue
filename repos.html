@@ -1,10 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
+<html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <body>
-$END$
+
+<div id="app" class="container">
+    <div>
+        <div class="form-group">
+            <br>
+            <div style="text-align: center">
+                <label for="username">GitHub Username</label>
+            </div>
+            <input class="form-control" placeholder="Enter the GitHub Username" id="username">
+        </div>
+        <div style="text-align: center">
+            <button id="submit" class="btn btn-primary">Get Details</button>
+        </div>
+    </div>
+    <br>
+    <div class="alert alert-danger" role="alert" id="Fill_Username" style="display: none">
+        <div style="text-align: center">
+            Fill Username
+        </div>
+    </div>
+    <div class="alert alert-danger" role="alert" id="Wrong_Username" style="display: none">
+        <div style="text-align: center">
+            Wrong Username
+        </div>
+    </div>
+    <div style="text-align: center">
+        <div class="spinner-border" role="status" id="loader" style="display: none">
+
+        </div>
+    </div>
+    <div id="information">
+        <ul class="list-group mx-auto mb-5">
+            <li class="list-group-item" v-for="x in data">
+                <p><strong>Repo:</strong>{{x['Repos']}}</p>
+                <p><strong>Description:</strong>{{x['description']}}</p>
+                <p><strong>URL:</strong> <a href="{{x['html_url']}}">{{x['html_url']}}</a></p>
+            </li>
+        </ul>
+
+    </div>
+
+
+</div>
+
+<script>
+    window.page = 0;
+    function get_repos(username) {
+        $.get(`https://api.github.com/users/${username}/repos?page=${window.page + 1}`, function(data){
+            window.page += 1;
+            console.log(data)
+            $("#Wrong_Username").css("display", "none")
+        }).fail(function() {
+            console.log("Problem")
+            $('#Wrong_Username').css("display", "")
+            $("#loader").css("display", "none")
+        });
+    }
+    const myObject = new Vue({
+        el: '#information',
+        data: {
+            data: [],
+        }
+    })
+</script>
+
 </body>
-</html>
+
+
