@@ -80,7 +80,7 @@
             window.username = username;
             window.max = false;
         }
-
+        $("#loader").css("display", "");
         $.get(`https://api.github.com/users/${username}/repos?page=${window.page + 1}`, function(data){
             console.log(data);
 
@@ -102,6 +102,7 @@
             $('#Wrong_Username').css("display", "")
             $("#loader").css("display", "none")
         });
+        $("#loader").css("display", "none");
     }
     const myObject = new Vue({
         el: '#information',
