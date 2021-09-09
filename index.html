@@ -19,7 +19,7 @@
                 <div style="text-align: center">
                     <label for="username">GitHub Username</label>
                 </div>
-                <input type="email" class="form-control" placeholder="Enter the GitHub Username" id="username">
+                <input class="form-control" placeholder="Enter the GitHub Username" id="username">
             </div>
             <div style="text-align: center">
                 <button id="submit" class="btn btn-primary">Get Details</button>
@@ -46,7 +46,8 @@
             <div style="text-align: center">
                 <img :src="img" alt="profile" class="img-fluid rounded-circle">
             </div>
-
+            <br>
+            <br>
             <table class="table table-bordered">
                 <thead>
                 <tr>
@@ -87,6 +88,17 @@
             let final_data = {};
             final_data['Name'] = data['name'];
             final_data['HTML Url'] = `<a href="${data['html_url']}" target="_blank">See Profile</a>`;
+            const bio = data['bio'];
+            let final_bio = "";
+            let char = "";
+            for (char of bio.split(" ")){
+                if (char[0] === "@"){
+                    final_bio = final_bio + `<a href="https://github.com/${char.slice(1)}" target="_blank">${char} </a>`;
+                } else{
+                    final_bio = final_bio + char + " "
+                }
+            }
+            final_data['Bio'] = final_bio;
             final_data['Number of Followers'] = String(data['followers']);
             final_data['Following'] = String(data['following']);
             final_data['Location'] = data['location'];
@@ -119,8 +131,10 @@
         const username = $("#username").val();
         if (username.replace(" ", "") === ""){
             $("#Fill_Username").css("display", "")
+            $("#Wrong_Username").css("display", "none")
         }else {
             $("#Fill_Username").css("display", "none")
+            $("#Wrong_Username").css("display", "none")
             add_more_data(username)
         }
 
