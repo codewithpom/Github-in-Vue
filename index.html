@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<body>
+
+    <div id="app" class="container">
+        <div>
+            <div class="form-group">
+                <br>
+                <div style="text-align: center">
+                    <label for="username">GitHub Username</label>
+                </div>
+                <input type="email" class="form-control" placeholder="Enter the GitHub Username" id="username">
+            </div>
+            <div style="text-align: center">
+                <button id="submit" class="btn btn-primary">Get Details</button>
+            </div>
+        </div>
+        <br>
+        <div class="alert alert-danger" role="alert" id="Fill_Username" style="display: none">
+            <div style="text-align: center">
+                Fill Username
+            </div>
+        </div>
+        <div class="alert alert-danger" role="alert" id="Wrong_Username" style="display: none">
+            <div style="text-align: center">
+                Wrong Username
+            </div>
+        </div>
+        <div style="text-align: center">
+            <div class="spinner-border" role="status" id="loader" style="display: none">
+
+            </div>
+        </div>
+
+        <div id="information" style="display: none">
+            <div style="text-align: center">
+                <img :src="img" alt="profile" class="img-fluid rounded-circle">
+            </div>
+
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>{{key}}</th>
+                    <th>{{value}}</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="x in Object.keys(data)">
+                        <td>{{x}}</td>
+                        <td v-html="data[x]"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<script>
+
+    const myObject = new Vue({
+        el: '#information',
+        data: {
+            data: [],
+            img: "",
+            key: "Key",
+            value: "Value"
+        }
+    })
+
+    function add_more_data(username) {
+
+        $("#loader").css("display", "")
+        $.get(`https://api.github.com/users/${username}`, function(data){
+            console.log(data)
+            $("#Wrong_Username").css("display", "none")
+            myObject.$data.img = data['avatar_url'];
+            let final_data = {};
+            final_data['Name'] = data['name'];
+            final_data['HTML Url'] = `<a href="${data['html_url']}" target="_blank">See Profile</a>`;
+            final_data['Number of Followers'] = String(data['followers']);
+            final_data['Following'] = String(data['following']);
+            final_data['Location'] = data['location'];
+            const hire_able = data['hireable'];
+            if (hire_able){
+                final_data['Can be hired'] = "Yep!" ;
+            }else {
+                final_data['Can be hired'] = "Nope";
+            }
+
+            final_data['Twitter Username'] = `<a href="https://twitter.com/${data['twitter_username']}" target="_blank">@${data['twitter_username']}</a>`;
+            final_data['Public Repos'] = String(data['public_repos']);
+            final_data['Public Gists'] = String(data['public_gists']);
+            final_data['Joined GitHub at'] = data['created_at'];
+            final_data['Last Account Update'] = data['updated_at'];
+            myObject.$data.data = final_data;
+            $("#loader").css("display", "none")
+            document.getElementById("information").style.display = "";
+
+        }).fail(function() {
+            console.log("Problem")
+            $('#Wrong_Username').css("display", "")
+            $("#loader").css("display", "none")
+        });
+
+    }
+
+
+    $("#submit").on("click", function (){
+        const username = $("#username").val();
+        if (username.replace(" ", "") === ""){
+            $("#Fill_Username").css("display", "")
+        }else {
+            $("#Fill_Username").css("display", "none")
+            add_more_data(username)
+        }
+
+
+    })
+
+</script>
+
+</body>
+</html>
